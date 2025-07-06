@@ -1,0 +1,17 @@
+{
+  "name": "s16.gamesapi",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module", 
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "s16dih",
+  "license": "GPL-3.0-only",
+  "description": "games api for your site",
+  "dependencies": {
+    "express": "^4.19.2",
+    "node-fetch": "^3.x.x" 
+  }
+}
