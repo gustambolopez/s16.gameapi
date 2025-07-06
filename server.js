@@ -55,7 +55,7 @@ async function delivertheResult(result) {
 
     // gives the final json
     const transformedResult = {
-        ...result, // Keep existing fields (title, id, description)
+        ...result, 
         link,
     };
 
