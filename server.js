@@ -120,7 +120,6 @@ app.get('/v0/api/games/q/:searchTerm', async (req, res) => {
         res.status(500).json({ error: 'Server error', details: err.message })
     }
 })
-// some random ahh messages in case youre hosting it in local (i dont think you can because the api bases are hidden lmao)
 app.get('/', (req, res) => {
     res.send('(Hosted on heaven previously altera, go check it here "https://discord.gg/qk4HmXf8tz"). to search something try /v0/api/games/q/(yoursearch)')
 })
