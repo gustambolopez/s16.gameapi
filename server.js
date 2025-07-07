@@ -75,7 +75,7 @@ async function delivertheResult(result) {
 }
 
 //  paths and the initial result from graphql that then is transformed
-app.get('/v0/api/games/q/:searchTerm', async (req, res) => {
+app.get('/v0/api/games/q=:searchTerm', async (req, res) => {
     const term = req.params.searchTerm;
 
     const query = `
@@ -124,7 +124,7 @@ app.get('/v0/api/games/q/:searchTerm', async (req, res) => {
     }
 });
 // some random ahh messages in case youre hosting it in local (i dont think you can because the api bases are hidden lmao)
-const DEV_MESSAGE = process.env.DEV_MESSAGE || '(Hosted on heaven previously altera, go check it here "https://discord.gg/qk4HmXf8tz"). to search something try /v0/api/games/q/(yoursearch)';
+const DEV_MESSAGE = process.env.DEV_MESSAGE || '(Hosted on heaven previously altera, go check it here "https://discord.gg/qk4HmXf8tz"). to search something try /v0/api/games/q=(yoursearch)';
 
 app.get('/', (req, res) => {
     res.send(DEV_MESSAGE);
