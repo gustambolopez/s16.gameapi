@@ -1,0 +1,6 @@
+{
+  "name": "s16.gamesapi",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22-bullseye", 
+  "forwardPorts": [8080], 
+  "postCreateCommand": "npm install"
+}
