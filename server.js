@@ -1,3 +1,4 @@
+//the shittiest game api frfr
 import express from 'express';
 import fetch from 'node-fetch';
 import dotenv from 'dotenv'; // i hope ts finally works
@@ -5,82 +6,78 @@ import dotenv from 'dotenv'; // i hope ts finally works
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 25565;
-//     _   __      _ _ _
+const port = process.env.PORT || 8080;
+
+//      _   __      _ _ _
 //  ___/ |/ /_    __| (_) |__
-// / __| | '_ \ / _` | | '_ \
-// \__ \ | (_) | (_| | | | | |
-// |___/_|\___/ \__,_|_|_| |_|
+// / __| | '_ \ / _` | | '_
+// \__ \ | (_) | (_| | | | |/
+// |___/_|\___/ \__,_|_|_|_| |_|
 
 app.use(express.json());
-const API_BASE = process.env.API_BASE;
-// some sigma addtions fr
-const LINK_BASE = process.env.LINK_BASE;
-const LINK_SUFFIX = process.env.LINK_SUFFIX;
+const API = process.env.API;
+// some sigma addtions fr (those are envs bc i might get cooked if someone sees it )
+const BASE = process.env.BASE;
+const linksuffix = process.env.linksuffix;
 
-const IMG_BASE = process.env.IMG_BASE;
-const IMG_SUFFIX = process.env.IMG_SUFFIX;
-const IMG_SUFFIX_TWO = process.env.IMG_SUFFIX_TWO;
+const Image = process.env.Image;
+const image_suffix = process.env.image_suffix;
+const image_suffixtwo = process.env.image_suffixtwo;
 
 // ts is so only the imgs that actually work show up on the json (this can slow a little bit response times)
 async function checkstatus(url) {
     try {
-        const response = await fetch(url, { method: 'HEAD', timeout: 5000 });
-        return response.ok ? url : null;
-    } catch (error) {
-       // if theres an error
-        console.error(`Error in the image ${url}:`, error.message);
+        const res = await fetch(url, { method: 'HEAD', timeout: 5000 });
+        return res.ok ? url : null;
+    } catch (err) {
+        console.error(`Error in the image ${url}:`, err.message);
         return null;
     }
 }
 
-// checks the status of the images (in case they dont work)
-async function delivertheResult(result) {
+// so basically ts just makes it so it delivers only one result (prioritizing the 512x512 format cuz is better)
+async function theresultlmao(result) {
     const id = result.id;
-    const link = `${LINK_BASE}${id}${LINK_SUFFIX}`;
+    const link = `${BASE}${id}${linksuffix}`;
 
-    const jpgPromise = checkstatus(`${IMG_BASE}${id}${IMG_SUFFIX}.jpg`);
-    const jpegPromise = checkstatus(`${IMG_BASE}${id}${IMG_SUFFIX}.jpeg`);
-    const pngPromise = checkstatus(`${IMG_BASE}${id}${IMG_SUFFIX}.png`);
-    const webpPromise = checkstatus(`${IMG_BASE}${id}${IMG_SUFFIX}.webp`);
-    const jpgtwoPromise = checkstatus(`${IMG_BASE}${id}${IMG_SUFFIX_TWO}.jpg`);
-    const jpegtwoPromise = checkstatus(`${IMG_BASE}${id}${IMG_SUFFIX_TWO}.jpeg`);
-    const pngtwoPromise = checkstatus(`${IMG_BASE}${id}${IMG_SUFFIX_TWO}.png`);
-    const webptwoPromise = checkstatus(`${IMG_BASE}${id}${IMG_SUFFIX_TWO}.webp`);
+    const possibleImageUrls = [
+        `${Image}${id}${image_suffix}.jpg`,
+        `${Image}${id}${image_suffix}.jpeg`,
+        `${Image}${id}${image_suffix}.png`,
+        `${Image}${id}${image_suffix}.webp`,
+        `${Image}${id}${image_suffixtwo}.jpg`,
+        `${Image}${id}${image_suffixtwo}.jpeg`,
+        `${Image}${id}${image_suffixtwo}.png`,
+        `${Image}${id}${image_suffixtwo}.webp`
+    ];
 
-    const [
-        jpg, jpeg, png, webp,
-        jpgtwo, jpegtwo, pngtwo, webptwo
-    ] = await Promise.all([
-        jpgPromise, jpegPromise, pngPromise, webpPromise,
-        jpgtwoPromise, jpegtwoPromise, pngtwoPromise, webptwoPromise
-    ]);
+    let theimageurl = null;
+    for (let url of possibleImageUrls) {
+        const found = await checkstatus(url);
+        if (found) {
+            theimageurl = found;
+            break;
+        }
+    }
 
-    // gives the final json
-    const transformedResult = {
-        ...result, // Keep existing fields (title, id, description)
+    const thefinalresult = {
+        ...result,
         link,
     };
 
-    if (jpg) transformedResult.img = jpg;
-    if (jpeg) transformedResult.jpeg = jpeg;
-    if (png) transformedResult.png = png;
-    if (webp) transformedResult.webp = webp;
-    if (jpgtwo) transformedResult.img2 = jpgtwo;
-    if (jpegtwo) transformedResult.jpeg2 = jpegtwo;
-    if (pngtwo) transformedResult.png2 = pngtwo;
-    if (webptwo) transformedResult.webp2 = webptwo;
+    if (theimageurl) thefinalresult.img = theimageurl;
 
-    return transformedResult;
+    return thefinalresult;
 }
 
-//  paths and the initial result from graphql that then is transformed
+// paths and the initial result from graphql that then is transformed
 app.get('/v0/api/games/q=:searchTerm', async (req, res) => {
     const term = req.params.searchTerm;
+    const quantity = parseInt(req.query.quantity) || 21000;
 
     const query = `
-        query {
-            results(search: "${term}", limit: 21000, offset: 0) {
+        query GetSearchResults {
+            results(search: "${term}", limit: ${quantity}, offset: 0) {
                 title
                 id
                 description
@@ -89,7 +86,7 @@ app.get('/v0/api/games/q=:searchTerm', async (req, res) => {
     `;
 
     try {
-        const resp = await fetch(API_BASE, {
+        const resp = await fetch(API, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -97,11 +94,11 @@ app.get('/v0/api/games/q=:searchTerm', async (req, res) => {
             },
             body: JSON.stringify({ query })
         });
-    // some error messages (if it fails)
+
         if (!resp.ok) {
-            const txt = await resp.text();
-            console.error(`GraphQL error ${resp.status}: ${txt}`);
-            return res.status(resp.status).json({ error: `Fetch failed: ${txt}` });
+            const errText = await resp.text();
+            console.error(`GraphQL error ${resp.status}: ${errText}`);
+            return res.status(resp.status).json({ error: `Fetch failed: ${errText}` });
         }
 
         const data = await resp.json();
@@ -111,19 +108,75 @@ app.get('/v0/api/games/q=:searchTerm', async (req, res) => {
             return res.status(500).json({ error: 'GraphQL errors', details: data.errors });
         }
 
-        let finalResults = [];
-        if (data.data && Array.isArray(data.data.results)) {
-            finalResults = await Promise.all(data.data.results.map(delivertheResult));
+        const results = Array.isArray(data?.data?.results) ? await Promise.all(data.data.results.map(theresultlmao)) : [];
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'No games found for that search term try searching another one maybe' });
         }
 
-        res.json({ data: { results: finalResults } });
+        res.json(results);
 
     } catch (err) {
         console.error('Fetch error:', err);
         res.status(500).json({ error: 'Server error', details: err.message });
     }
 });
-// some random ahh messages in case youre hosting it in local (i dont think you can because the api bases are hidden lmao)
+
+// retarded idea frfr (standalone id search )
+app.get('/v0/api/games/:id', async (req, res) => {
+    const gameId = req.params.id;
+    const query = `
+        query {
+            results(search: "${gameId}", limit: 1, offset: 0) {
+                title
+                id
+                description
+            }
+        }
+    `;
+
+    try {
+        const resp = await fetch(API, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ query })
+        });
+
+        if (!resp.ok) {
+            const errText = await resp.text();
+            console.error(`GraphQL error ${resp.status}: ${errText}`);
+            return res.status(resp.status).json({ error: `Fetch failed: ${errText}` });
+        }
+
+        const data = await resp.json();
+
+        if (data.errors) {
+            console.error('GraphQL returned errors:', data.errors);
+            return res.status(500).json({ error: 'GraphQL errors', details: data.errors });
+        }
+
+        let gameResult = null;
+        const found = data?.data?.results?.find(g => g.id === gameId);
+        if (found) gameResult = await theresultlmao(found);
+
+        if (gameResult) {
+            res.json([gameResult]);
+        } else {
+            res.status(404).json({ error: 'Game not found, is the ID correct or does it exist?' });
+        }
+
+    } catch (err) {
+        console.error('Fetch error:', err);
+        res.status(500).json({ error: 'Server error', details: err.message });
+    }
+});
+
+
+
+// idefk atp lmao
 const DEV_MESSAGE = process.env.DEV_MESSAGE || '(Hosted on heaven previously altera, go check it here "https://discord.gg/qk4HmXf8tz"). to search something try /v0/api/games/q=(yoursearch)';
 
 app.get('/', (req, res) => {
