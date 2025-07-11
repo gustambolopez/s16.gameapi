@@ -15,6 +15,6 @@
   "dependencies": {
     "express": "^4.19.2",
     "node-fetch": "^3.x.x",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.5"
   }
 }
