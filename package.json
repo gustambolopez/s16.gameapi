@@ -1,11 +1,12 @@
+
 {
   "name": "s16.gamesapi",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "s16dih",
@@ -14,6 +15,6 @@
   "dependencies": {
     "express": "^4.19.2",
     "node-fetch": "^3.x.x",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
   }
-}  
+}
