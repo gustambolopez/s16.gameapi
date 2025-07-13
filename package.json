@@ -14,7 +14,6 @@
   "description": "games api for your site",
   "dependencies": {
     "express": "^4.19.2",
-    "node-fetch": "^3.x.x",
-    "dotenv": "^16.4.5",
+    "node-fetch": "^3.x.x"
   }
 }

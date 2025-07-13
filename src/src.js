@@ -1,33 +1,28 @@
-// the shittiest game api frfr
+// the shittiest game api frfr 
 import express from 'express';
 import fetch from 'node-fetch';
-import dotenv from 'dotenv'; // i hope ts finally works
 
-dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 8080;
 
-// i implemented cache so if theres repeated queries it loads faster
 const searchCache = new Map();
 const durationOfthecache = 6 * 60 * 1000;
-
-//      _   __      _ _ _
-//  ___/ |/ /_    __| (_) |__
+// if you want to use it contact me on my discord
+//      _   __    _ _ _
+//  ___/ |/ /_   __| (_) |__
 // / __| | '_ \ / _` | | '_
 // \__ \ | (_) | (_| | | |/
-// |___/_|\___/ \__,_|_|_| |_| 
+// |___/_|\___/ \__,_|_|_| |_|
+
 
 app.use(express.json());
 
-const API = process.env.API;
-// some sigma addtions fr (those are envs bc i might get cooked if someone sees it )
-const BASE = process.env.BASE;
-const linksuffix = process.env.linksuffix;
+import { API, BASE, linksuffix, Image } from './value.js';
 
-const Image = process.env.Image;
-const image_suffix = process.env.image_suffix;
-const image_suffixtwo = process.env.image_suffixtwo;
+
+const image_suffix = "-512x512";
+const image_suffixtwo = "-512x384"; 
 
 // ts is so only the imgs that actually work show up on the json (this can slow a little bit response times but i fixed it with cache stuff)
 async function checkstatus(url) {
@@ -50,9 +45,9 @@ async function theresultlmao(result) {
 
     const possibleImageUrls = [
         `${Image}${id}${firstsuffix}.jpg`,
-        `${Image}${id}${firstsuffix}}.jpeg`,
-        `${Image}${id}${firstsuffix}}.png`,
-        `${Image}${id}${firstsuffix}}.webp`,
+        `${Image}${id}${firstsuffix}.jpeg`,
+        `${Image}${id}${firstsuffix}.png`,
+        `${Image}${id}${firstsuffix}.webp`,
         `${Image}${id}${twosuffix}.jpg`,
         `${Image}${id}${twosuffix}.jpeg`,
         `${Image}${id}${twosuffix}.png`,
@@ -69,8 +64,9 @@ async function theresultlmao(result) {
         }
     }
 
+    const { id: _, ...exclude } = result;
     const thefinalresult = {
-        ...result,
+        ...exclude,
         link
     };
 
@@ -185,7 +181,7 @@ app.get('/v0/api/games/:id', async (req, res) => {
             },
             body: JSON.stringify({ query })
         });
-   // some erorr or sucess mesasages
+    // some erorr or sucess mesasages
         if (!resp.ok) {
             const errText = await resp.text();
             console.error(`GraphQL error ${resp.status}: ${errText}`);
