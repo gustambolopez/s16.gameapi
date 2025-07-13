@@ -10,15 +10,11 @@
   },
   "keywords": [],
   "author": "s16dih",
-  "license": "GPL-3.0-only",
+  "license": "MIT",
   "description": "games api for your site",
   "dependencies": {
     "express": "^4.19.2",
-<<<<<<< HEAD
-    "node-fetch": "^3.x.x"
-=======
     "node-fetch": "^3.x.x",
     "dotenv": "^16.4.5"
->>>>>>> cca93852c23e9cbc58112bda0176593370e39133
   }
 }
