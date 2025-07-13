@@ -80,7 +80,7 @@ async function theresultlmao(result) {
 // paths and the initial result from graphql that then is transformed
 app.get('/v0/api/games/q=:searchTerm', async (req, res) => {
     const term = req.params.searchTerm;
-    const quantity = parseInt(req.query.quantity) || 21000;
+    const quantity = parseInt(req.query.quantity) || 20500;
     const sortByTitle = req.query.sortBytitle !== undefined;
 
     const cacheKey = `${term}-${quantity}-${sortByTitle}`;
@@ -101,7 +101,6 @@ app.get('/v0/api/games/q=:searchTerm', async (req, res) => {
         query GetSearchResults {
             results(search: "${term}", limit: ${quantity}, offset: 0) {
                 title
-                id
                 description
             }
         }
