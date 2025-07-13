@@ -105,7 +105,6 @@ app.get('/v0/api/games/q=:searchTerm', async (req, res) => {
         query GetSearchResults {
             results(search: "${term}", limit: ${quantity}, offset: 0) {
                 title
-                id
                 description
             }
         }
