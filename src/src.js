@@ -1,16 +1,16 @@
 // the shittiest game api frfr 
 import express from 'express';
 import fetch from 'node-fetch';
-
+import { hostname } from 'os';
 
 const app = express();
 const port = process.env.PORT || 8080;
 
-const searchCache = new Map();
-const durationOfthecache = 6 * 60 * 1000;
+const cachesearch = new Map();
+const cacheduration = 6 * 60 * 1000;
 // if you want to use it contact me on my discord
-//      _   __    _ _ _
-//  ___/ |/ /_   __| (_) |__
+//       _   __   _ _ _
+// ___/ |/ /_   __| (_) |__
 // / __| | '_ \ / _` | | '_
 // \__ \ | (_) | (_| | | |/
 // |___/_|\___/ \__,_|_|_| |_|
@@ -18,7 +18,7 @@ const durationOfthecache = 6 * 60 * 1000;
 
 app.use(express.json());
 
-import { API, BASE, linksuffix, Image } from './value.js';
+import { api_graphql, link_base, linksuffix, Image } from './value.js';
 
 
 const image_suffix = "-512x512";
@@ -38,7 +38,7 @@ async function checkstatus(url) {
 // so basically ts just makes it so it delivers only one result (prioritizing the 512x512 format cuz is better)
 async function theresultlmao(result) {
     const id = result.id;
-    const link = `${BASE}${id}${linksuffix}`;
+    const link = `${link_base}${id}${linksuffix}`;
 
     const firstsuffix = image_suffix;
     const twosuffix = image_suffixtwo;
@@ -86,17 +86,17 @@ app.get('/v0/api/games/q=:searchTerm', async (req, res) => {
     const cacheKey = `${term}-${quantity}-${sortByTitle}`;
 
     // search for cache first before loading so its faster
-    if (searchCache.has(cacheKey)) {
-        const cachedData = searchCache.get(cacheKey);
-        if (Date.now() - cachedData.timestamp < durationOfthecache) {
+    if (cachesearch.has(cacheKey)) {
+        const cachedData = cachesearch.get(cacheKey); 
+        if (Date.now() - cachedData.timestamp < cacheduration) {
             console.log('loading from cache:', cacheKey);
             return res.json(cachedData.results);
         } else {
-            searchCache.delete(cacheKey);
+            cachesearch.delete(cacheKey);
         }
     }
 
-    // copy pasted graphql queries from the origin site docs
+    // copy pasted graphql queries from game db
     const query = `
         query GetSearchResults {
             results(search: "${term}", limit: ${quantity}, offset: 0) {
@@ -108,7 +108,7 @@ app.get('/v0/api/games/q=:searchTerm', async (req, res) => {
     `;
 
     try {
-        const resp = await fetch(API, {
+        const resp = await fetch(api_graphql, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ app.get('/v0/api/games/q=:searchTerm', async (req, res) => {
         }
 
         // implemented cache for faster loading when user repeats a query
-        searchCache.set(cacheKey, {
+        cachesearch.set(cacheKey, { 
             results,
             timestamp: Date.now()
         });
@@ -173,7 +173,7 @@ app.get('/v0/api/games/:id', async (req, res) => {
     `;
 
     try {
-        const resp = await fetch(API, {
+        const resp = await fetch(api_graphql, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -217,6 +217,28 @@ app.get('/', (req, res) => {
     res.send(DEV_MESSAGE);
 });
 
-app.listen(port, () => {
-    console.log(`Listening on http://localhost:${port}`);
+let server;
+
+function shutdown() {
+    console.log("SIGTERM signal received: closing HTTP server");
+    server.close(() => {
+        console.log("https server closed.");
+        process.exit(0);
+    });
+}
+
+// graceful shutdown
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
+
+server = app.listen(port, () => {
+    const address = server.address();
+    console.log("Listening on:");
+    console.log(`\thttp://localhost:${address.port}`);
+    console.log(`\thttp://${hostname()}:${address.port}`);
+    console.log(
+        `\thttp://${
+            address.family === "IPv6" ? `[${address.address}]` : address.address
+        }:${address.port}`
+    );
 });
