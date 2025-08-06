@@ -2,7 +2,7 @@ services:
   - type: web
     name: s16.api
     env: node
-    buildCommand: "npm install"
-    startCommand: "node index.js"
+    buildCommand: 'npm install'
+    startCommand: 'node index.js'
     region: oregon
     plan: free

@@ -1,0 +1,10 @@
+# build stuff
+node_modules/
+package-lock.json
+
+# misc
+.gitattributes
+.gitiignore
+index.js
+
+
