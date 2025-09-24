@@ -9,7 +9,8 @@
   "main": "index.js",
   "scripts": {
     "format": "prettier --write .",
-    "start": "node index.js"
+    "start": "node index.js",
+    "start:dev": "nodemon src/index.js"
   },
   "dependencies": {
     "boxen": "^8.0.1",
@@ -19,6 +20,7 @@
     "ora": "^8.2.0"
   },
   "devDependencies": {
+    "nodemon": "3.1.10",
     "prettier": "latest",
     "prettier-plugin-jsdoc": "latest",
     "prettier-plugin-organize-imports": "latest",

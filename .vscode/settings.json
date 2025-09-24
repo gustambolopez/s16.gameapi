@@ -1,0 +1,17 @@
+{
+	"workbench.colorTheme": "Glyph Oled",
+	"workbench.iconTheme": "vs-seti",
+	"workbench.editor.empty.hint": "hidden",
+
+	"editor.fontFamily": "JetBrains Mono, Fira Code, 'Cascadia Code', Consolas, monospace",
+	"editor.fontLigatures": true,
+	"editor.fontSize": 13.2,
+	"editor.lineHeight": 1.5,
+	"editor.fontWeight": "376",
+	"editor.cursorBlinking": "smooth",
+	"editor.renderWhitespace": "boundary",
+	"editor.smoothScrolling": true,
+	"editor.guides.bracketPairs": "active",
+	"editor.minimap.enabled": false,
+	"editor.bracketPairColorization.enabled": true
+}

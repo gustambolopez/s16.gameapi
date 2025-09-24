@@ -5,6 +5,5 @@ package-lock.json
 # misc
 .gitattributes
 .gitiignore
-index.js
 
 
